@@ -12,6 +12,7 @@ public class UserDaoJDBCImpl implements UserDao {
     public UserDaoJDBCImpl() {
 
     }
+    @Override
     public void createUsersTable() {
         String checkTableExistsSQL = "SELECT COUNT(*) FROM information_schema.tables " +
                 "WHERE table_schema = 'your_database_name' " +
@@ -24,16 +25,17 @@ public class UserDaoJDBCImpl implements UserDao {
                 "age TINYINT)";
 
         try (Connection connection = Util.getConnection();
-             Statement statement = connection.createStatement()) {
+             PreparedStatement checkStatement = connection.prepareStatement(checkTableExistsSQL);
+             PreparedStatement createStatement = connection.prepareStatement(createTableSQL)) {
 
             // Проверка существования таблицы
-            ResultSet resultSet = statement.executeQuery(checkTableExistsSQL);
+            ResultSet resultSet = checkStatement.executeQuery();
             resultSet.next();
             int count = resultSet.getInt(1);
 
             if (count == 0) {
                 // Таблица не существует, создаем её
-                statement.executeUpdate(createTableSQL);
+                createStatement.executeUpdate();
                 System.out.println("Таблица 'users' создана.");
             } else {
                 System.out.println("Таблица 'users' уже существует.");
@@ -43,6 +45,7 @@ public class UserDaoJDBCImpl implements UserDao {
         }
     }
 
+    @Override
     public void dropUsersTable() {
         String dropTableSQL = "DROP TABLE users";
         try (Connection connection = Util.getConnection();
@@ -54,6 +57,7 @@ public class UserDaoJDBCImpl implements UserDao {
         }
     }
 
+    @Override
     public void saveUser(String name, String lastName, byte age) {
         String insertSQL = "INSERT INTO users (name, lastName, age) VALUES (?, ?, ?)";
         try (Connection connection = Util.getConnection();
@@ -68,6 +72,7 @@ public class UserDaoJDBCImpl implements UserDao {
         }
     }
 
+    @Override
     public void removeUserById(long id) {
         String deleteSQL = "DELETE FROM users WHERE id = ?";
 
@@ -81,6 +86,7 @@ public class UserDaoJDBCImpl implements UserDao {
         }
     }
 
+    @Override
     public List<User> getAllUsers() {
         List<User> users = new ArrayList<>();
 
@@ -105,6 +111,7 @@ public class UserDaoJDBCImpl implements UserDao {
         return users;
     }
 
+    @Override
     public void cleanUsersTable() {
         String deleteSQL = "DELETE FROM users";
         try (Connection connection = Util.getConnection();
