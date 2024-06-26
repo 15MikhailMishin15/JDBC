@@ -1,4 +1,5 @@
 package jm.task.core.jdbc;
+
 import jm.task.core.jdbc.dao.UserDao;
 import jm.task.core.jdbc.dao.UserDaoJDBCImpl;
 import jm.task.core.jdbc.model.User;
@@ -21,10 +22,8 @@ public class Main {
 
         userDao.removeUserById(1);
 
-        // Получаем всех пользователей
         List<User> users = userDao.getAllUsers();
 
-        // Выводим всех пользователей в консоль
         for (User user : users) {
             System.out.println(user);
         }
