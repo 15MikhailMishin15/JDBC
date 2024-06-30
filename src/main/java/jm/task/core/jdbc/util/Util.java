@@ -1,30 +1,43 @@
 package jm.task.core.jdbc.util;
 
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.SQLException;
+import jm.task.core.jdbc.model.User;
+import org.hibernate.SessionFactory;
+import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
+import org.hibernate.cfg.Configuration;
+import org.hibernate.service.ServiceRegistry;
 
 public class Util {
-    private static final String URL = "jdbc:mysql://localhost:3306/mydbtest";
-    private static final String USER = "root";
-    private static final String PASSWORD = "Password_1";
+    private static SessionFactory sessionFactory;
 
-    public static Connection connection;
+    static {
+        try {
+            Configuration configuration = new Configuration();
+            // Добавление аннотированных классов
+            configuration.addAnnotatedClass(User.class);
 
-    public static Connection getConnection()  {
-            try {
-                if (connection == null || connection.isClosed()){
-                Class.forName("com.mysql.cj.jdbc.Driver");
-                connection = DriverManager.getConnection(URL, USER, PASSWORD);
-                System.out.println("Connection OK");
-                }
-            } catch (ClassNotFoundException e) {
-                System.err.println("MySQL JDBC Driver not found.");
-                e.printStackTrace();
-            } catch (SQLException e) {
-                System.err.println("Connection to the database failed.");
-            }
+            // Настройки Hibernate
+            configuration.setProperty("hibernate.dialect", "org.hibernate.dialect.MySQL5Dialect");
+            configuration.setProperty("hibernate.connection.driver_class", "com.mysql.cj.jdbc.Driver");
+            configuration.setProperty("hibernate.connection.url", "jdbc:mysql://localhost:3306/mydbtest");
+            configuration.setProperty("hibernate.connection.username", "root");
+            configuration.setProperty("hibernate.connection.password", "Password_1");
+            configuration.setProperty("hibernate.hbm2ddl.auto", "update");
+            configuration.setProperty("hibernate.show_sql", "true");
 
-        return connection;
+            ServiceRegistry serviceRegistry = new StandardServiceRegistryBuilder()
+                    .applySettings(configuration.getProperties()).build();
+
+            sessionFactory = configuration.buildSessionFactory(serviceRegistry);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+    }
+
+    public static SessionFactory getSessionFactory() {
+        return sessionFactory;
+    }
+
+    public static void shutdown() {
+        getSessionFactory().close();
     }
 }

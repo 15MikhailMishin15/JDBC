@@ -3,16 +3,14 @@ package jm.task.core.jdbc.dao;
 import jm.task.core.jdbc.model.User;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
-import org.hibernate.cfg.Configuration;
+import jm.task.core.jdbc.util.Util;
+
 
 import java.util.List;
 
 public class UserDaoHibernateImpl implements UserDao {
 
-    SessionFactory factory = new Configuration()
-            .configure("hibernate.cfg.xml")
-            .addAnnotatedClass(User.class)
-            .buildSessionFactory();
+    private final SessionFactory factory = Util.getSessionFactory();
 
     public UserDaoHibernateImpl() {
 
