@@ -23,7 +23,7 @@ public class Util {
             configuration.setProperty("hibernate.connection.password", "Password_1");
             configuration.setProperty("hibernate.hbm2ddl.auto", "update");
             configuration.setProperty("hibernate.show_sql", "true");
-
+            configuration.setProperty("hibernate.current_session_context_class", "thread");
             ServiceRegistry serviceRegistry = new StandardServiceRegistryBuilder()
                     .applySettings(configuration.getProperties()).build();
 
